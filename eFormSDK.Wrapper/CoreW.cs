@@ -62,7 +62,7 @@ namespace eFormSDK.Wrapper
         #endregion
 
         [DllExport("Core_SubscribeStartEvent")]
-        unsafe public static int Core_SubscribeStartEvent(Int32 callbackPointer)
+        public static int Core_SubscribeStartEvent(Int32 callbackPointer)
         {
             int result = 0;
             try
