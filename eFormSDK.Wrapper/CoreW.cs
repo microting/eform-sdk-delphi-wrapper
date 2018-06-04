@@ -46,7 +46,18 @@ namespace eFormSDK.Wrapper
             int result = 0;
             try
             {
-                core.Start(serverConnectionString);
+                try
+                {
+                    core.Start(serverConnectionString);
+                }
+                catch (Exception ex1)
+                {
+                    AdminTools adminTools = new AdminTools(serverConnectionString);
+                    adminTools.MigrateDb();
+                    adminTools.DbSettingsReloadRemote();
+                    core.Start(serverConnectionString);
+                }
+                //core.Start(serverConnectionString);
                 //IntPtr ptr = (IntPtr)startCallbackPointer;
                 //NativeCallback callbackMethod =  (NativeCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(NativeCallback));
                 //callbackMethod(100);
