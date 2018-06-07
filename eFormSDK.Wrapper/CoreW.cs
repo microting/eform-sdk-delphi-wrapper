@@ -16,9 +16,9 @@ namespace eFormSDK.Wrapper
     {
         private static Core core;
         private static MainElement mainElement;
-        private static Int32 startCallbackPointer;
 
-        public delegate void NativeCallback(Int32 param);
+        private static Int32 caseCreatedCallbackPointer;
+        public delegate void CaseCreatedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
 
         #region Core_Create
         [DllExport("Core_Create")]
@@ -47,6 +47,7 @@ namespace eFormSDK.Wrapper
             try
             {
                 core.Start(serverConnectionString);
+                //core.HandleCaseCreated += Core_HandleCaseCreated;
                 //IntPtr ptr = (IntPtr)startCallbackPointer;
                 //NativeCallback callbackMethod =  (NativeCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(NativeCallback));
                 //callbackMethod(100);
@@ -61,14 +62,14 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
-        [DllExport("Core_SubscribeStartEvent")]
-        unsafe public static int Core_SubscribeStartEvent(Int32 callbackPointer)
+        [DllExport("Core_HandleCaseCreated")]
+        public static int Core_HandleCaseCreated(Int32 callbackPointer)
         {
             int result = 0;
             try
             {
-                startCallbackPointer = callbackPointer;
-                //core.HandleCaseCompleted += Core_HandleCaseCompleted; 
+                caseCreatedCallbackPointer = callbackPointer;               
+                core.HandleCaseCreated += Core_HandleCaseCreated; 
             }
             catch (Exception ex)
             {
@@ -78,22 +79,16 @@ namespace eFormSDK.Wrapper
             return result;
         }
 
-        private static void Core_HandleCaseCompleted(object sender, EventArgs e)
+        private static void Core_HandleCaseCreated(object sender, EventArgs e)
         {
-            Case_Dto trigger = (Case_Dto)sender;
-            int siteId = trigger.SiteUId;
-            string caseType = trigger.CaseType;
-            string caseUid = trigger.CaseUId;
-            string mUId = trigger.MicrotingUId;
-            string checkUId = trigger.CheckUId;
-            string CaseId = trigger.CaseId.ToString();
+            Case_Dto caseDto = (Case_Dto)sender;
+     
+            Packer packer = new Packer();
+            String jsonCaseDto = packer.PackCaseDto(caseDto);
 
-            // Then use callback to pass these values back to Delphi and construct correspond 
-            // Case_Dto object where, using statement like this
-
-            //IntPtr ptr = (IntPtr)caseCompletedCallbackPointer;
-            //CaseCompletedCallback caseCompletedCallbackMethod = (CaseCompletedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(NativeCallback));
-            //caseCompletedCallbackMethod(siteId, caseType, caseUid, mUId, checkUId, CaseId);
+            IntPtr ptr = (IntPtr)caseCreatedCallbackPointer;
+            CaseCreatedCallback caseCreatedCallbackMethod = (CaseCreatedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(CaseCreatedCallback));
+            caseCreatedCallbackMethod(jsonCaseDto);
         }
 
   
@@ -104,8 +99,8 @@ namespace eFormSDK.Wrapper
             int result = 0;
             try
             {
-                MainElement mainElement = core.TemplateFromXml(xml);
-                json = new Packer().PackCoreElement(mainElement);
+                MainElement mainElement = core.TemplateFromXml(xml);          
+                json = new Packer().PackCoreElement(mainElement);              
             }
             catch (Exception ex)
             {

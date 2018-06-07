@@ -168,6 +168,18 @@ namespace eFormSDK.Wrapper
                     mainElement.ElementList.Add(dataElement);
                 }
             }
+
+            //----------- Needs to make changes int MainElemnt class to get rid of this
+            try
+            {
+                string title = mainElement.PushMessageTitle;
+            }
+            catch(Exception)
+            {
+                mainElement.PushMessageTitle = "";
+            }
+
+            //-----------
             return mainElement;
         }
         
@@ -242,6 +254,11 @@ namespace eFormSDK.Wrapper
         public string PackTemplateDto(Template_Dto templateDto )
         {
             return JObject.FromObject(templateDto).ToString();
+        }
+
+        public string PackCaseDto(Case_Dto caseDto)
+        {
+            return JObject.FromObject(caseDto).ToString();
         }
 
         #endregion
