@@ -18,7 +18,12 @@ namespace eFormSDK.Wrapper
         private static MainElement mainElement;
 
         private static Int32 caseCreatedCallbackPointer;
+        private static Int32 caseCompletedCallbackPointer;
+        private static Int32 caseDeletedCallbackPointer;
+
         public delegate void CaseCreatedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
+        public delegate void CaseCompletedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
+        public delegate void CaseDeletedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
 
         #region Core_Create
         [DllExport("Core_Create")]
@@ -68,6 +73,7 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
+        #region HandleCaseCreated
         [DllExport("Core_HandleCaseCreated")]
         public static int Core_HandleCaseCreated(Int32 callbackPointer)
         {
@@ -96,8 +102,85 @@ namespace eFormSDK.Wrapper
             CaseCreatedCallback caseCreatedCallbackMethod = (CaseCreatedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(CaseCreatedCallback));
             caseCreatedCallbackMethod(jsonCaseDto);
         }
+        #endregion
 
-  
+        #region HandleCaseCompleted
+        [DllExport("Core_HandleCaseCompleted")]
+        public static int Core_HandleCaseCompleted(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                caseCompletedCallbackPointer = callbackPointer;
+                core.HandleCaseCompleted += Core_HandleCaseCompleted;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleCaseCompleted(object sender, EventArgs e)
+        {
+            Case_Dto caseDto = (Case_Dto)sender;
+
+            Packer packer = new Packer();
+            String jsonCaseDto = packer.PackCaseDto(caseDto);
+
+            IntPtr ptr = (IntPtr)caseCompletedCallbackPointer;
+            CaseCompletedCallback caseCompletedCallbackMethod = (CaseCompletedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(CaseCompletedCallback));
+            caseCompletedCallbackMethod(jsonCaseDto);
+        }
+        #endregion
+
+        #region HandleCaseDeleted
+        [DllExport("Core_HandleCaseDeleted")]
+        public static int Core_HandleCaseDeleted(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                caseDeletedCallbackPointer = callbackPointer;
+                core.HandleCaseDeleted += Core_HandleCaseDeleted;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleCaseDeleted(object sender, EventArgs e)
+        {
+            Case_Dto caseDto = (Case_Dto)sender;
+
+            Packer packer = new Packer();
+            String jsonCaseDto = packer.PackCaseDto(caseDto);
+
+            IntPtr ptr = (IntPtr)caseDeletedCallbackPointer;
+            CaseDeletedCallback caseDeletedCallbackMethod = (CaseDeletedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(CaseDeletedCallback));
+            caseDeletedCallbackMethod(jsonCaseDto);
+        }
+        #endregion
+
+        #region HandleCaseRetrived
+        #endregion
+
+        #region HandleEventException
+        #endregion
+
+        #region HandleFileDownloaded
+        #endregion
+
+        #region HandleNotificationNotFound
+        #endregion
+
+        #region HandleSiteActivated
+        #endregion
+
         #region TemplateFromXml
         [DllExport("Core_TemplateFromXml")]
         public static int Core_TemplateFromXml([MarshalAs(UnmanagedType.BStr)] string xml, [MarshalAs(UnmanagedType.BStr)] ref string json)
