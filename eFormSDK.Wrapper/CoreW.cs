@@ -20,10 +20,17 @@ namespace eFormSDK.Wrapper
         private static Int32 caseCreatedCallbackPointer;
         private static Int32 caseCompletedCallbackPointer;
         private static Int32 caseDeletedCallbackPointer;
+        private static Int32 caseRetrivedCallbackPointer;
+        private static Int32 eventExceptionCallbackPointer;
+        private static Int32 siteActivatedCallbackPointer;
+
 
         public delegate void CaseCreatedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
         public delegate void CaseCompletedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
         public delegate void CaseDeletedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
+        public delegate void CaseRetrivedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
+        public delegate void EventExceptionCallback([MarshalAs(UnmanagedType.BStr)]String error);
+        public delegate void SiteActivatedCallback(int siteId);
 
         #region Core_Create
         [DllExport("Core_Create")]
@@ -167,9 +174,62 @@ namespace eFormSDK.Wrapper
         #endregion
 
         #region HandleCaseRetrived
+        [DllExport("Core_HandleCaseRetrived")]
+        public static int Core_HandleCaseRetrived(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                caseRetrivedCallbackPointer = callbackPointer;
+                core.HandleCaseRetrived += Core_HandleCaseRetrived;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleCaseRetrived(object sender, EventArgs e)
+        {
+            Case_Dto caseDto = (Case_Dto)sender;
+
+            Packer packer = new Packer();
+            String jsonCaseDto = packer.PackCaseDto(caseDto);
+
+            IntPtr ptr = (IntPtr)caseRetrivedCallbackPointer;
+            CaseRetrivedCallback caseRetrivedCallbackMethod = (CaseRetrivedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(CaseRetrivedCallback));
+            caseRetrivedCallbackMethod(jsonCaseDto);
+        }
         #endregion
 
         #region HandleEventException
+        [DllExport("Core_HandleEventException")]
+        public static int Core_HandleEventException(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                eventExceptionCallbackPointer = callbackPointer;
+                core.HandleEventException += Core_HandleEventException;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleEventException(object sender, EventArgs e)
+        {
+            Exception ex = (Exception)sender;
+ 
+            IntPtr ptr = (IntPtr)eventExceptionCallbackPointer;
+            EventExceptionCallback eventExceptionCallbackMethod = (EventExceptionCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(EventExceptionCallback));
+            eventExceptionCallbackMethod(ex.Message);
+        }
         #endregion
 
         #region HandleFileDownloaded
@@ -179,6 +239,31 @@ namespace eFormSDK.Wrapper
         #endregion
 
         #region HandleSiteActivated
+        [DllExport("Core_HandleSiteActivated")]
+        public static int Core_HandleSiteActivated(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                siteActivatedCallbackPointer = callbackPointer;
+                core.HandleSiteActivated += Core_HandleSiteActivated;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleSiteActivated(object sender, EventArgs e)
+        {
+            int siteId = int.Parse(sender.ToString());
+
+            IntPtr ptr = (IntPtr)siteActivatedCallbackPointer;
+            SiteActivatedCallback siteActivatedCallbackMethod = (SiteActivatedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(SiteActivatedCallback));
+            siteActivatedCallbackMethod(siteId);
+        }
         #endregion
 
         #region TemplateFromXml
