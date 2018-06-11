@@ -23,7 +23,8 @@ namespace eFormSDK.Wrapper
         private static Int32 caseRetrivedCallbackPointer;
         private static Int32 eventExceptionCallbackPointer;
         private static Int32 siteActivatedCallbackPointer;
-
+        private static Int32 fileDownloadedCallbackPointer;
+        private static Int32 notificationNotFoundCallbackPointer;
 
         public delegate void CaseCreatedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
         public delegate void CaseCompletedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
@@ -31,6 +32,8 @@ namespace eFormSDK.Wrapper
         public delegate void CaseRetrivedCallback([MarshalAs(UnmanagedType.BStr)]String jsonCaseDto);
         public delegate void EventExceptionCallback([MarshalAs(UnmanagedType.BStr)]String error);
         public delegate void SiteActivatedCallback(int siteId);
+        public delegate void FileDownloadedCallback([MarshalAs(UnmanagedType.BStr)]String jsonFileDto);
+        public delegate void NotificationNotFoundCallback([MarshalAs(UnmanagedType.BStr)]String jsonNoteDto);
 
         #region Core_Create
         [DllExport("Core_Create")]
@@ -233,9 +236,65 @@ namespace eFormSDK.Wrapper
         #endregion
 
         #region HandleFileDownloaded
+        [DllExport("Core_HandleFileDownloaded")]
+        public static int Core_HandleFileDownloaded(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                fileDownloadedCallbackPointer = callbackPointer;
+                core.HandleFileDownloaded += Core_HandleFileDownloaded;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleFileDownloaded(object sender, EventArgs e)
+        {
+            File_Dto fileDto = (File_Dto)sender;
+
+            Packer packer = new Packer();
+            String jsonFileDto = packer.PackFileDto(fileDto);
+
+            IntPtr ptr = (IntPtr)fileDownloadedCallbackPointer;
+            FileDownloadedCallback fileDownloadedCallbackMethod = (FileDownloadedCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(FileDownloadedCallback));
+            fileDownloadedCallbackMethod(jsonFileDto);         
+        }
         #endregion
 
         #region HandleNotificationNotFound
+        [DllExport("Core_HandleNotificationNotFound")]
+        public static int Core_HandleNotificationNotFound(Int32 callbackPointer)
+        {
+            int result = 0;
+            try
+            {
+                notificationNotFoundCallbackPointer = callbackPointer;
+                core.HandleNotificationNotFound += Core_HandleNotificationNotFound;
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+
+        private static void Core_HandleNotificationNotFound(object sender, EventArgs e)
+        {
+            Note_Dto noteDto = (Note_Dto)sender;
+
+            Packer packer = new Packer();
+            String jsonNoteDto = packer.PackNoteDto(noteDto);
+
+            IntPtr ptr = (IntPtr)notificationNotFoundCallbackPointer;
+            NotificationNotFoundCallback notificationNotFoundCallbackMethod = (NotificationNotFoundCallback)Marshal.GetDelegateForFunctionPointer(ptr, typeof(NotificationNotFoundCallback));
+            notificationNotFoundCallbackMethod(jsonNoteDto);
+        }
         #endregion
 
         #region HandleSiteActivated

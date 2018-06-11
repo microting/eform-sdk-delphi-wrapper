@@ -261,6 +261,16 @@ namespace eFormSDK.Wrapper
             return JObject.FromObject(caseDto).ToString();
         }
 
+        public string PackFileDto(File_Dto fileDto)
+        {
+            return JObject.FromObject(fileDto).ToString();
+        }
+
+        public string PackNoteDto(Note_Dto noteDto)
+        {
+            return JObject.FromObject(noteDto).ToString();
+        }
+
         #endregion
     }
 }
