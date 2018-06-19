@@ -247,6 +247,12 @@ namespace eFormSDK.Wrapper
             return JArray.FromObject(stringList).ToString();
         }
 
+        public string PackSiteNameDto(SiteName_Dto siteNameDto)
+        {
+            return JObject.FromObject(siteNameDto).ToString();
+        }
+
+
         public string PackSiteNameDtoList(List<SiteName_Dto> siteNameDtoList)
         {
             return JArray.FromObject(siteNameDtoList).ToString();

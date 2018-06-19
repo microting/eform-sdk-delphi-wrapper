@@ -481,6 +481,26 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
+        #region Core_Advanced_SiteItemRead
+        [DllExport("Core_Advanced_SiteItemRead")]
+        public static int Core_Advanced_SiteItemRead(int siteId, [MarshalAs(UnmanagedType.BStr)] ref string json)
+        {
+            int result = 0;
+            try
+            {
+                SiteName_Dto siteNameDto = core.Advanced_SiteItemRead(siteId);
+                Packer packer = new Packer();
+                json = packer.PackSiteNameDto(siteNameDto);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
         #region Core_Advanced_SiteItemReadAll
         [DllExport("Core_Advanced_SiteItemReadAll")]
         public static int Core_Advanced_SiteItemReadAll([MarshalAs(UnmanagedType.BStr)] ref string json)
