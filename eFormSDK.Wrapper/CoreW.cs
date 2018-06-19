@@ -481,7 +481,7 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
-        #region Core_Advanced_SiteItemRead
+        #region Advanced_SiteItemRead
         [DllExport("Core_Advanced_SiteItemRead")]
         public static int Core_Advanced_SiteItemRead(int siteId, [MarshalAs(UnmanagedType.BStr)] ref string json)
         {
@@ -501,7 +501,7 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
-        #region Core_Advanced_SiteItemReadAll
+        #region Advanced_SiteItemReadAll
         [DllExport("Core_Advanced_SiteItemReadAll")]
         public static int Core_Advanced_SiteItemReadAll([MarshalAs(UnmanagedType.BStr)] ref string json)
         {
