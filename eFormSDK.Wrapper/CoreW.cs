@@ -56,14 +56,14 @@ namespace eFormSDK.Wrapper
 
         #region Core_Start
         [DllExport("Core_Start")]
-        public static int Core_Start([MarshalAs(UnmanagedType.BStr)]String serverConnectionString)
+        public static int Core_Start([MarshalAs(UnmanagedType.BStr)]String serverConnectionString, ref bool startResult)
         {
             int result = 0;
             try
             {
                 try
                 {
-                    core.Start(serverConnectionString);
+                    startResult = core.Start(serverConnectionString);
                 }
                 catch (Exception ex1)
                 {
@@ -71,6 +71,35 @@ namespace eFormSDK.Wrapper
                     adminTools.MigrateDb();
                     adminTools.DbSettingsReloadRemote();
                     core.Start(serverConnectionString);
+                }
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+
+            return result;
+        }
+        #endregion
+
+        #region Core_StartSqlOnly
+        [DllExport("Core_StartSqlOnly")]
+        public static int Core_StartSqlOnly([MarshalAs(UnmanagedType.BStr)]String serverConnectionString, ref bool startResult)
+        {
+            int result = 0;
+            try
+            {
+                try
+                {
+                    startResult = core.StartSqlOnly(serverConnectionString);
+                }
+                catch (Exception ex1)
+                {
+                    AdminTools adminTools = new AdminTools(serverConnectionString);
+                    adminTools.MigrateDb();
+                    adminTools.DbSettingsReloadRemote();
+                    core.StartSqlOnly(serverConnectionString);
                 }
             }
             catch (Exception ex)
