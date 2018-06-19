@@ -520,6 +520,25 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
+        #region TemplateItemReadAll
+        [DllExport("Core_TemplateItemReadAll")]
+        public static int Core_TemplateItemReadAll(bool includeRemoved, [MarshalAs(UnmanagedType.BStr)] ref string json)
+        {
+            int result = 0;
+            try
+            {
+                List<Template_Dto> templateDtoList = core.TemplateItemReadAll(includeRemoved);
+                json = new Packer().PackTemplateDtoList(templateDtoList);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
         #region CaseCreate
         [DllExport("Core_CaseCreate")]
         public static int Core_CaseCreate([MarshalAs(UnmanagedType.BStr)] string jsonMainElement,

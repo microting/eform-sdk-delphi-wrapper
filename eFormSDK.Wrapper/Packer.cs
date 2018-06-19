@@ -251,9 +251,15 @@ namespace eFormSDK.Wrapper
         {
             return JArray.FromObject(siteNameDtoList).ToString();
         }
+
         public string PackTemplateDto(Template_Dto templateDto )
         {
             return JObject.FromObject(templateDto).ToString();
+        }
+
+        public string PackTemplateDtoList(List<Template_Dto> templateDtoList)
+        {
+            return JArray.FromObject(templateDtoList).ToString();
         }
 
         public string PackCaseDto(Case_Dto caseDto)
