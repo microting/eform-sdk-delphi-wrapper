@@ -659,6 +659,43 @@ namespace eFormSDK.Wrapper
             return result;
         }
         #endregion
+
+        #region Advanced_TemplateDisplayIndexChangeDb
+        [DllExport("Core_Advanced_TemplateDisplayIndexChangeDb")]
+        public static int Core_Advanced_TemplateDisplayIndexChangeDb(int templateId, int displayIndex, ref bool changeResult)
+        {
+            int result = 0;
+            try
+            {
+                changeResult = core.Advanced_TemplateDisplayIndexChangeDb(templateId, displayIndex);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
+        #region Advanced_TemplateDisplayIndexChangeServer
+        [DllExport("Core_Advanced_TemplateDisplayIndexChangeServer")]
+        public static int Core_Advanced_TemplateDisplayIndexChangeServer(int templateId, int siteUId, 
+            int displayIndex, ref bool changeResult)
+        {
+            int result = 0;
+            try
+            {
+                changeResult = core.Advanced_TemplateDisplayIndexChangeServer(templateId, siteUId, displayIndex);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
     }
 
 }
