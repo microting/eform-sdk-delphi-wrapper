@@ -641,6 +641,24 @@ namespace eFormSDK.Wrapper
             return result;
         }
         #endregion
+
+        #region CaseDelete2
+        [DllExport("Core_CaseDelete2")]
+        public static int Core_CaseDelete2(int templateId, int siteUId, ref bool deleteResult)
+        {
+            int result = 0;
+            try
+            {
+                deleteResult = core.CaseDelete(templateId, siteUId);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
     }
 
 }
