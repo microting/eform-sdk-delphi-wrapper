@@ -722,6 +722,30 @@ namespace eFormSDK.Wrapper
             return result;
         }
         #endregion
+
+        #region CasesToCsv
+        [DllExport("Core_CasesToCsv")]
+        public static int Core_CasesToCsv(int templateId, [MarshalAs(UnmanagedType.BStr)] string start,
+            [MarshalAs(UnmanagedType.BStr)] string end, [MarshalAs(UnmanagedType.BStr)] string pathAndame,
+            [MarshalAs(UnmanagedType.BStr)] string customPathForUploadedData, [MarshalAs(UnmanagedType.BStr)] ref string csvResult)
+        {
+            int result = 0;
+            try
+            {
+                CultureInfo provider = CultureInfo.InvariantCulture;
+                DateTime startDate = DateTime.ParseExact(start, "yyyy-MM-dd", provider);
+                DateTime endDate = DateTime.ParseExact(end, "yyyy-MM-dd", provider);
+
+                csvResult= core.CasesToCsv(templateId, startDate, endDate, pathAndame, customPathForUploadedData);             
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
     }
 
 }
