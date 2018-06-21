@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using RGiesecke.DllExport;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -614,6 +615,31 @@ namespace eFormSDK.Wrapper
             {
                 ReplyElement replyElement = core.CaseRead(microtingUId, checkUId);
                 jsonReplyElement = new Packer().PackCoreElement(replyElement);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
+        #region CaseReadAll
+        [DllExport("Core_CaseReadAll")]
+        public static int Core_CaseReadAll (int templateId, [MarshalAs(UnmanagedType.BStr)] string start,
+            [MarshalAs(UnmanagedType.BStr)] string end, [MarshalAs(UnmanagedType.BStr)] ref string jsonCases)
+        {
+            int result = 0;
+            try
+            {
+                CultureInfo provider = CultureInfo.InvariantCulture;
+                DateTime startDate = DateTime.ParseExact(start, "yyyy-MM-dd", provider);
+                DateTime endDate = DateTime.ParseExact(end, "yyyy-MM-dd", provider);
+
+                List<Case> cases = core.CaseReadAll(templateId, startDate, endDate);
+          
+                jsonCases = new Packer().PackCasesList(cases);
             }
             catch (Exception ex)
             {

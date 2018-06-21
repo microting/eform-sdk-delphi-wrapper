@@ -283,6 +283,15 @@ namespace eFormSDK.Wrapper
             return JObject.FromObject(noteDto).ToString();
         }
 
+        public string PackCasesList(List<Case> casesList)
+        {
+            if (casesList == null)
+            {
+                casesList = new List<Case>();
+            }
+            return JArray.FromObject(casesList).ToString();
+        }
+
         #endregion
     }
 }
