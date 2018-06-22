@@ -194,6 +194,18 @@ namespace eFormSDK.Wrapper
             }
             return result;
         }
+
+        public List<string> UnpackStringList(String json)
+        {
+            List<string> result = new List<string>();
+            JArray arr = JArray.Parse(json);
+            foreach (JToken token in arr)
+            {
+                string val = token.ToString();
+                result.Add(val);
+            }
+            return result;
+        }
         #endregion
 
         #region Packers

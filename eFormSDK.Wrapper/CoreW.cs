@@ -705,6 +705,28 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
+        #region CaseUpdate
+        [DllExport("Core_CaseUpdate")]
+        public static int Core_CaseUpdate(int caseId, [MarshalAs(UnmanagedType.BStr)] string jsonNewFieldValuePairLst,
+            [MarshalAs(UnmanagedType.BStr)] string jsonNewCheckListValuePairLst,  ref bool updateResult)
+        {
+            int result = 0;
+            try
+            {
+                Packer packer = new Packer();
+                List<string> newFieldValuePairLst = packer.UnpackStringList(jsonNewFieldValuePairLst);
+                List<string> newCheckListValuePairLst = packer.UnpackStringList(jsonNewCheckListValuePairLst);
+                updateResult = core.CaseUpdate(caseId, newFieldValuePairLst, newCheckListValuePairLst);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
         #region Advanced_TemplateDisplayIndexChangeDb
         [DllExport("Core_Advanced_TemplateDisplayIndexChangeDb")]
         public static int Core_Advanced_TemplateDisplayIndexChangeDb(int templateId, int displayIndex, ref bool changeResult)
