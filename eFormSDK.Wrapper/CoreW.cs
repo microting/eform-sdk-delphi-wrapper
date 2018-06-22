@@ -650,6 +650,25 @@ namespace eFormSDK.Wrapper
         }
         #endregion
 
+        #region CaseReadByCaseId
+        [DllExport("Core_CaseReadByCaseId")]
+        public static int Core_CaseReadByCaseId(int caseId,[MarshalAs(UnmanagedType.BStr)] ref string jsonCaseDto)
+        {
+            int result = 0;
+            try
+            {
+                Case_Dto caseDto = core.CaseReadByCaseId(caseId);
+                jsonCaseDto = new Packer().PackCaseDto(caseDto);
+            }
+            catch (Exception ex)
+            {
+                LastError.Value = ex.Message;
+                result = 1;
+            }
+            return result;
+        }
+        #endregion
+
         #region CaseDelete
         [DllExport("Core_CaseDelete")]
         public static int Core_CaseDelete([MarshalAs(UnmanagedType.BStr)] string microtingUId, ref bool deleteResult)
